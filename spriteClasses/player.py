@@ -115,13 +115,13 @@ class Player:
             if self.targetX[i] == self.x and self.targetY[i] == self.y:
                 if len(self.targetX) == 1 and len(self.targetY) == 1:
                     self.target = False
-                    print("exit")
+                    #print("exit")
                 if len(self.targetX) > 1:
-                    print("pop x")
+                   #print("pop x")
                     self.targetX.pop(0)
                 if len(self.targetY) > 1:
                     self.targetY.pop(0)
-                    print("pop y")
+                    #print("pop y")
         # self.soul = py.Rect(self.x, self.y, var.GRID_SIZE, var.GRID_SIZE)
         for i in range(len(line)):
             line[i].draw()

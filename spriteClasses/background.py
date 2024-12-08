@@ -23,7 +23,7 @@ class GridClass:
             self.crop = True
             self.cropType = 0
             self.ripe = True
-            self.fertile = True
+            self.fertile = False
             self.state = False
         # self.sprite = py.sprite.Sprite.add()
 
@@ -45,7 +45,7 @@ class GridClass:
             # plant type?
             if self.cropType == 0:
                 # Krovavik
-                art.TILE_PLACEHOLDER.blit(self.x, self.y)
+                art.KrovavikTile.blit(self.x, self.y)
             # ripe Checks
             if self.ripe == True:
                 art.RipeMarker.blit(self.x + var.GRID_SIZE - 10, self.y + var.GRID_SIZE - 10)
@@ -53,4 +53,5 @@ class GridClass:
             elif self.fertile == True:
                 art.FertileMarker.blit(self.x + var.GRID_SIZE - 10, self.y + var.GRID_SIZE - 10)
                 if self.state == False:
-                    py.clock.schedule_once(lambda dt: (setattr(self, 'ripe', True), setattr(self, 'fertile', False)), 5)
+                    print("Clock Time")
+                    py.clock.schedule_once(lambda dt: (setattr(self, 'fertile', False), setattr(self, 'ripe', True)), 5)

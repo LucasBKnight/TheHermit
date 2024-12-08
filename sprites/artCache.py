@@ -15,9 +15,9 @@ GUI_PLACEHOLDER = py.image.load("venv/art/PLACEHOLDERS/125x125_GUI_PLACEHOLDER.p
 KrakovikBerryINV = py.image.load("venv/art/inventoryIcons/KrovavikBerryINV.png")
 KrakovikBerryCOR = py.image.load("venv/art/inventoryIcons/KrovavikCOR_INV.png")
 FertilizerINV = py.image.load("venv/art/inventoryIcons/FertilizerIconINV.png")
-
+#Krovavik Bush
+KrovavikTile = py.image.load("venv/art/tiles/KrovavikBush/KrovavikBush.png")
 # markers
-# replace this with a darker green kinda shit rn ngl
 RipeMarker = py.image.load("venv/art/markers/RipeMarker.png")
 FertileMarker = py.image.load("venv/art/markers/FertileMarker.png")
 

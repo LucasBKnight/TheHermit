@@ -12,14 +12,19 @@ from sprites import artCache as art
 # main window
 WIN = py.window.Window(width=var.WIN_WIDTH, height=var.WIN_HEIGHT, caption="The Hermit")
 WIN.set_icon(art.ChemIcon)
+WIN.set_visible(True)
 # inventory Window
 INV_CLASS = inv.menu()
 INV = py.window.Window(width=var.INV_WIDTH, height=var.INV_HEIGHT, caption="Inventory")
+INV.set_icon(art.ChemIcon)
+INV.set_visible(True)
 
 # build window
 CON_CLASS = inv.menu()
 CON = py.window.Window(width=var.CON_WIDTH, height=var.CON_HEIGHT, caption="Build Menu")
-CON.set_location(var.WIN_WIDTH * (5 / 8) + 50, var.WIN_HEIGHT)
+CON.set_icon(art.ChemIcon)
+CON.set_visible(True)
+# CON.set_location(var.WIN_WIDTH * (5 / 8) + 50, var.WIN_HEIGHT)
 
 # grid
 GRID = []
@@ -46,7 +51,7 @@ def GLO_key(symbol):
         CON_CLASS.show()
     CON.set_visible(CON_CLASS.is_shown())
     if symbol == py.window.key.EQUAL:
-        #Player.materials["Krovavik Berries"] += 1
+        # Player.materials["Krovavik Berries"] += 1
         print(Player.materials)
     if symbol == py.window.key.PLUS:
         Player.materials["PLACEHOLDER BERRIES"] += 1
@@ -172,14 +177,14 @@ def on_mouse_press(x, y, button, modifiers):
     if button == pyglet.window.mouse.LEFT and Fert.build == True:
         for i in range(len(GRID)):
             print(i)
-            if GRID[i].crop == True:
+            if GRID[i].crop is True:
                 print("tis crop")
-                if GRID[i].fertile == False and M50(x) == GRID[i].x and M50(y) == GRID[i].y and Player.materials[
-                    "Fertilizer"] > 0:
+                if GRID[i].fertile is False and GRID[i].ripe is False and M50(x) == GRID[i].x and M50(y) == GRID[i].y \
+                        and Player.materials["Fertilizer"] > 0:
                     print("fertile")
                     GRID[i].fertile = True
                     Player.materials["Fertilizer"] -= 1
-    elif button == pyglet.window.mouse.LEFT and Fert.build == False:
+    elif button == pyglet.window.mouse.LEFT and Fert.build is False:
         Player.target = True
         if modifiers == py.window.key.MOD_SHIFT:
             print("Shift")
@@ -208,16 +213,16 @@ def on_draw():
     # Background
     for i in range(len(GRID)):
         GRID[i].draw()
-        if GRID[i].crop == True:
-            if GRID[i].ripe == True and Player.x == GRID[i].x and Player.y == GRID[i].y:
+        if GRID[i].crop is True:
+            if GRID[i].ripe is True and Player.x == GRID[i].x and Player.y == GRID[i].y:
                 GRID[i].ripe = False
                 if GRID[i].cropType == 0:
-                    if random.randint(0,4) == 1:
+                    if random.randint(0, 4) == 1:
                         Player.materials["Krovavik Berries (Corrupted)"] += 1
                     else:
                         Player.materials["Krovavik Berries"] += 1
         # print(f"Drew {i} Blocks")
-    # Draw stuff here, after background you idiot, this is like the fifth time you've drew it above the clear function
+    # Draw stuff here, after background you idiot, this is like the fifth time you've drawn it above the clear function
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     Player.draw()
 
