@@ -7,7 +7,7 @@ from pyglet.gl import *
 
 import variables as var
 from spriteClasses import background, player, menuWindows as inv
-from sprites import artCache as art
+from sprites import artCache as art,soundCache as sound
 
 # main window
 WIN = py.window.Window(width=var.WIN_WIDTH, height=var.WIN_HEIGHT, caption="The Hermit")
@@ -25,7 +25,10 @@ CON = py.window.Window(width=var.CON_WIDTH, height=var.CON_HEIGHT, caption="Buil
 CON.set_icon(art.ChemIcon)
 CON.set_visible(True)
 # CON.set_location(var.WIN_WIDTH * (5 / 8) + 50, var.WIN_HEIGHT)
-
+CRA_CLASS = inv.menu()
+CRA = py.window.Window(width=var.CON_WIDTH, height=var.CON_HEIGHT, caption="Build Menu")
+CRA.set_icon(art.ChemIcon)
+CRA.set_visible(False)
 # grid
 GRID = []
 Player = player.Player()
@@ -44,11 +47,18 @@ def grid_setup():
 # --------------------------------------------------------
 def GLO_key(symbol):
     Player.key(symbol)
+    if symbol == py.window.key.ASCIITILDE:
+        WIN.clear()
+        #CRA.set_visible(True)
     if symbol == py.window.key.I:
         INV_CLASS.show()
+        WIN.set_visible(False)
+        WIN.set_visible(True)
     INV.set_visible(INV_CLASS.is_shown())
-    if symbol == py.window.key.C:
+    if symbol == py.window.key.B:
         CON_CLASS.show()
+        WIN.set_visible(False)
+        WIN.set_visible(True)
     CON.set_visible(CON_CLASS.is_shown())
     if symbol == py.window.key.EQUAL:
         # Player.materials["Krovavik Berries"] += 1
@@ -119,49 +129,69 @@ def on_key_press(symbol, modifiers):
 
 
 class fert:
-    def __init__(self):
-        self.x = 60
-        self.y = var.CON_HEIGHT - 40
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
         self.Col = (255, 255, 255)
+        self.SubCol = (255, 255, 255)
         self.build = False
 
 
-Fert = fert()
-
+Fertil = fert(70,var.CON_HEIGHT - 40)
+Smith = fert(70,var.CON_HEIGHT - 120)
 
 @CON.event
 def on_mouse_press(x, y, button, modifiers):
+    #fertilizer
     if button == pyglet.window.mouse.LEFT:
-        if x > Fert.x - 50 and x < Fert.x + 50 and y > Fert.y - 50 and y < Fert.y + 50:
-            if Fert.build == False:
-                Fert.Col = (100, 0, 0)
-                Fert.build = True
-            elif Fert.build == True:
-                Fert.Col = (255, 255, 255)
-                Fert.build = False
+        if x > Fertil.x - 50 and x < Fertil.x + 50 and y > Fertil.y - 50 and y < Fertil.y + 50:
+            if Smith.build is True:
+                Smith.build = False
+                Smith.Col = (255, 255, 255)
+            if Fertil.build == False:
+                Fertil.Col = (100, 0, 0)
+                Fertil.build = True
+            elif Fertil.build == True:
+                Fertil.Col = (255, 255, 255)
+                Fertil.build = False
+        #smithy
+        if x > Smith.x - 50 and x < Smith.x + 50 and y > Smith.y - 50 and y < Smith.y + 50:
+            if Fertil.build is True:
+                Fertil.build = False
+                Fertil.Col = (255, 255, 255)
+            if Smith.build == False:
+                Smith.Col = (100, 0, 0)
+                Smith.build = True
+            elif Smith.build == True:
+                Smith.Col = (255, 255, 255)
+                Smith.build = False
 
-
-@CON.event
-def on_draw():
-    GLO_clear()
-    CON.clear()
-    if Player.materials["Fertilizer"] < 1:
-        color = (100, 0, 0)
+def ConText(title,Fert,textArt,PlayerDict,DictType,LvlOrAmn,introTxt):
+    if PlayerDict[DictType] < LvlOrAmn:
+        Fert.SubCol = (100, 0, 0)
     else:
-        color = (255, 255, 255)
-    fertlilizeMain = py.text.Label(f"Fertilize",
+        Fert.SubCol = (255, 255, 255)
+    fertlilizeMain = py.text.Label(f"{title}",
                                    font_name='Times New Roman',
                                    font_size=20,
                                    x=Fert.x, y=Fert.y,
                                    anchor_x='center', anchor_y='bottom', color=Fert.Col)
-    fertlilizeSub = py.text.Label(f"Uses 1/{Player.materials['Fertilizer']}",
+    fertlilizeSub = py.text.Label(f"{introTxt} {LvlOrAmn}/{PlayerDict[DictType]}",
                                   font_name='Times New Roman',
                                   font_size=10,
                                   x=Fert.x - 5, y=Fert.y - 15,
-                                  anchor_x='center', anchor_y='bottom', color=color)
-    art.FertilizerINV.blit(Fert.x + 25, Fert.y - 13)
+                                  anchor_x='center', anchor_y='bottom', color=Fert.SubCol)
+    textArt.blit(Fert.x + 25, Fert.y - 13)
     fertlilizeMain.draw()
     fertlilizeSub.draw()
+@CON.event
+def on_draw():
+    GLO_clear()
+    CON.clear()
+    ConText("Fertilize",Fertil,art.FertilizerINV,Player.materials,"Fertilizer",1,"Uses")
+    if Player.workStations["Blacksmith"] < 1:
+        ConText("Blacksmith",Smith, art.INV_Smiles, Player.tools, "Free", 0, "Free")
+
     # print(CON.get_location())
 
 
@@ -174,31 +204,38 @@ def M50(n):
 
 @WIN.event
 def on_mouse_press(x, y, button, modifiers):
-    if button == pyglet.window.mouse.LEFT and Fert.build == True:
-        for i in range(len(GRID)):
-            print(i)
-            if GRID[i].crop is True:
-                print("tis crop")
-                if GRID[i].fertile is False and GRID[i].ripe is False and M50(x) == GRID[i].x and M50(y) == GRID[i].y \
-                        and Player.materials["Fertilizer"] > 0:
-                    print("fertile")
-                    GRID[i].fertile = True
-                    Player.materials["Fertilizer"] -= 1
-    elif button == pyglet.window.mouse.LEFT and Fert.build is False:
-        Player.target = True
-        if modifiers == py.window.key.MOD_SHIFT:
-            print("Shift")
-            Player.targetX.append(M50(x))
-            Player.targetY.append(M50(y))
-            print(Player.targetX)
+    if button == py.window.mouse.LEFT:
+        if Fertil.build is True:
+            for i in range(len(GRID)):
+                if GRID[i].crop is True:
+                    if GRID[i].fertile is False and GRID[i].ripe is False and M50(x) == GRID[i].x and M50(y) == GRID[i].y \
+                            and Player.materials["Fertilizer"] > 0:
+                        print("fertile")
+                        GRID[i].fertile = True
+                        Player.materials["Fertilizer"] -= 1
+        elif Smith.build is True:
+            for i in range(len(GRID)):
+                if Player.workStations["Blacksmith"]<1 and M50(x) == GRID[i].x and M50(y) == GRID[i].y:
+                    GRID[i].crop = False
+                    GRID[i].state = 3
+                    Player.workStations["Blacksmith"]=1
+                    sound.CONSTRUCTION_SOUND.play()
+                    print(f"Smith {i}, {GRID[i].state}")
         else:
-            Player.targetX[0] = M50(x)
-            Player.targetY[0] = M50(y)
+            Player.target = True
+            if modifiers == py.window.key.MOD_SHIFT:
+                print("Shift")
+                Player.targetX.append(M50(x))
+                Player.targetY.append(M50(y))
+                print(Player.targetX)
+            else:
+                Player.targetX[0] = M50(x)
+                Player.targetY[0] = M50(y)
 
 
 @WIN.event
 def on_show():
-    grid_setup()
+ aksndajsd = 5
 
 
 @WIN.event()
@@ -213,6 +250,7 @@ def on_draw():
     # Background
     for i in range(len(GRID)):
         GRID[i].draw()
+        #print(f"GRID[{i}].state is {GRID[i].state}")
         if GRID[i].crop is True:
             if GRID[i].ripe is True and Player.x == GRID[i].x and Player.y == GRID[i].y:
                 GRID[i].ripe = False
@@ -226,6 +264,8 @@ def on_draw():
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     Player.draw()
 
-
-# Run the application
-py.app.run()
+def main_start():
+    # Run the application
+    grid_setup()
+    py.app.run()
+main_start()

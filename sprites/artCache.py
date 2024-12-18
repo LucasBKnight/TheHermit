@@ -10,7 +10,7 @@ SmithyLVL1 = py.image.load("venv/art/tiles/Smithy/SmithyLVL1.png")
 # Placeholders
 TILE_PLACEHOLDER = py.image.load("venv/art/PLACEHOLDERS/50x50_PLACEHOLDER.png")
 GUI_PLACEHOLDER = py.image.load("venv/art/PLACEHOLDERS/125x125_GUI_PLACEHOLDER.png")
-
+INV_Smiles = py.image.load("venv/art/PLACEHOLDERS/INVsmiles.png")
 # INV assests
 KrakovikBerryINV = py.image.load("venv/art/inventoryIcons/KrovavikBerryINV.png")
 KrakovikBerryCOR = py.image.load("venv/art/inventoryIcons/KrovavikCOR_INV.png")

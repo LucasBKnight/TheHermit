@@ -22,6 +22,8 @@ class Player:
                           "Fertilizer": 20,
                           "PLACEHOLDER BERRIES": 0,
                           }
+        self.tools = {"Free":0,"Hoe":0}
+        self.workStations = {"Blacksmith": 0}
         # 0 = U, 1 = D, 2 = L, 3 = R, 4 = UL, 5 = UR, 6 = DL, 7 = DR,
         # self.soul = py.Rect(self.x, self.y, var.GRID_SIZE, var.GRID_SIZE)
         # py.draw.rect(var.WIN, "red", self.soul)
