@@ -1,6 +1,8 @@
 import pyglet as py
 
 ChemIcon = py.image.load("sprites/art/Icons/TheHermitIcon.PNG")
+#replace Tilled Grass artwork, it is literal garbage
+TilledGrass = py.image.load("sprites/art/tiles/Grass/TilledGrass.png")
 GrassTile1 = py.image.load("sprites/art/tiles/Grass/GrassTile1.png")
 CorruptGrassTile1 = py.image.load("sprites/art/tiles/Grass/Grasstile1Corrupt.png")
 WallTile1 = py.image.load("sprites/art/tiles/Wall/WallTile1.png")

@@ -20,7 +20,7 @@ INV.set_icon(art.ChemIcon)
 INV.set_visible(True)
 
 # build window
-CON_CLASS = inv.menu()
+CON_CLASS = inv.conmenu()
 CON = py.window.Window(width=var.CON_WIDTH, height=var.CON_HEIGHT, caption="Build Menu")
 CON.set_icon(art.ChemIcon)
 CON.set_visible(True)
@@ -62,7 +62,8 @@ def GLO_key(symbol):
     CON.set_visible(CON_CLASS.is_shown())
     if symbol == py.window.key.EQUAL:
         # Player.materials["Krovavik Berries"] += 1
-        print(Player.materials)
+        #print(Player.materials)
+        CON_CLASS.page = 1
     if symbol == py.window.key.PLUS:
         Player.materials["PLACEHOLDER BERRIES"] += 1
         print(Player.materials)
@@ -137,35 +138,44 @@ class fert:
         self.build = False
 
 
-Fertil = fert(70,var.CON_HEIGHT - 40)
-Smith = fert(70,var.CON_HEIGHT - 120)
+Fertil = fert(100,var.CON_HEIGHT - 40)
+Smith = fert(100,var.CON_HEIGHT - 120)
 
 @CON.event
 def on_mouse_press(x, y, button, modifiers):
-    #fertilizer
-    if button == pyglet.window.mouse.LEFT:
-        if x > Fertil.x - 50 and x < Fertil.x + 50 and y > Fertil.y - 50 and y < Fertil.y + 50:
-            if Smith.build is True:
-                Smith.build = False
-                Smith.Col = (255, 255, 255)
-            if Fertil.build == False:
-                Fertil.Col = (100, 0, 0)
-                Fertil.build = True
-            elif Fertil.build == True:
-                Fertil.Col = (255, 255, 255)
-                Fertil.build = False
-        #smithy
-        if x > Smith.x - 50 and x < Smith.x + 50 and y > Smith.y - 50 and y < Smith.y + 50:
-            if Fertil.build is True:
-                Fertil.build = False
-                Fertil.Col = (255, 255, 255)
-            if Smith.build == False:
-                Smith.Col = (100, 0, 0)
-                Smith.build = True
-            elif Smith.build == True:
-                Smith.Col = (255, 255, 255)
-                Smith.build = False
-
+    #menu Page 0
+    if CON_CLASS.page == 0:
+        if button == pyglet.window.mouse.LEFT:
+            #fertilizer
+            if x > Fertil.x - 50 and x < Fertil.x + 50 and y > Fertil.y - 50 and y < Fertil.y + 50:
+                if Smith.build is True:
+                    Smith.build = False
+                    Smith.Col = (255, 255, 255)
+                if Fertil.build == False:
+                    Fertil.Col = (100, 0, 0)
+                    Fertil.build = True
+                elif Fertil.build == True:
+                    Fertil.Col = (255, 255, 255)
+                    Fertil.build = False
+                sound.click.play()
+            #smithy
+            if x > Smith.x - 50 and x < Smith.x + 50 and y > Smith.y - 50 and y < Smith.y + 50:
+                if Fertil.build is True:
+                    Fertil.build = False
+                    Fertil.Col = (255, 255, 255)
+                if Smith.build == False:
+                    Smith.Col = (100, 0, 0)
+                    Smith.build = True
+                elif Smith.build == True:
+                    Smith.Col = (255, 255, 255)
+                    Smith.build = False
+                sound.click.play()
+    if CON_CLASS.page < CON_CLASS.MaxPage-1 and button == pyglet.window.mouse.LEFT and x<var.CON_WIDTH-5 and x>var.CON_WIDTH-25 and y<var.CON_HEIGHT/2+15 and y>var.CON_HEIGHT/2-15:
+        CON_CLASS.page+=1
+        sound.click.play()
+    if CON_CLASS.page > 0 and button == pyglet.window.mouse.LEFT and x>5 and x<25 and y<var.CON_HEIGHT/2+15 and y>var.CON_HEIGHT/2-15:
+        CON_CLASS.page-=1
+        sound.click.play()
 def ConText(title,Fert,textArt,PlayerDict,DictType,LvlOrAmn,introTxt):
     if PlayerDict[DictType] < LvlOrAmn:
         Fert.SubCol = (100, 0, 0)
@@ -188,10 +198,21 @@ def ConText(title,Fert,textArt,PlayerDict,DictType,LvlOrAmn,introTxt):
 def on_draw():
     GLO_clear()
     CON.clear()
-    ConText("Fertilize",Fertil,art.FertilizerINV,Player.materials,"Fertilizer",1,"Uses")
-    if Player.workStations["Blacksmith"] < 1:
-        ConText("Blacksmith",Smith, art.INV_Smiles, Player.tools, "Free", 0, "Free")
+    #con page 0
+    if CON_CLASS.page == 0:
+        ConText("Fertilize",Fertil,art.FertilizerINV,Player.materials,"Fertilizer",1,"Uses")
+        if Player.workStations["Blacksmith"] < 1:
+            ConText("Blacksmith",Smith, art.INV_Smiles, Player.tools, "Free", 0, "Free")
 
+    py.text.Label(f"Page: {CON_CLASS.page+1}/{CON_CLASS.MaxPage}",
+                                   font_name='Times New Roman',
+                                   font_size=10,
+                                   x=var.CON_WIDTH-10, y=0,
+                                   anchor_x='right', anchor_y='bottom', color=(255,255,255)).draw()
+    if CON_CLASS.page < CON_CLASS.MaxPage-1:
+        pyglet.shapes.Triangle(var.CON_WIDTH-5, var.CON_HEIGHT/2, var.CON_WIDTH-20, var.CON_HEIGHT/2+15, var.CON_WIDTH-20, var.CON_HEIGHT/2-15,color=(245, 245, 245)).draw()
+    if CON_CLASS.page > 0:
+        pyglet.shapes.Triangle(5, var.CON_HEIGHT/2, 20, var.CON_HEIGHT/2+15, 20, var.CON_HEIGHT/2-15,color=(245, 245, 245)).draw()
     # print(CON.get_location())
 
 

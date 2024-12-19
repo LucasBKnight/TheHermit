@@ -18,6 +18,7 @@ class GridClass:
         z = random.randint(0, 1010)
         if z < 995:
             self.state = 0
+            #self.isTilled = True
         elif z < 1000:
             self.state = 1
         else:
@@ -34,7 +35,7 @@ class GridClass:
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         if self.crop is False:
             if self.isTilled is True:
-                art.TILE_PLACEHOLDER.blit(self.x, self.y)
+                art.TilledGrass.blit(self.x, self.y)
             else:
                 if self.state == 0:
                     art.GrassTile1.blit(self.x, self.y)
