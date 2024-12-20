@@ -1,14 +1,21 @@
 import pyglet as py
 from pyglet.gl import *
-
-from sprites import artCache as art
-
+from sprites import artCache as art,soundCache as sound
+import random
 speed = 50
 
-
+def randStep():
+    r = random.randint(1, 3)
+    if r==1:
+        sound.step1.play()
+    elif r==2:
+        sound.step2.play()
+    elif r==3:
+        sound.step3.play()
 class Player:
     def __init__(self):
         self.x = 0
+        self.inter =0
         self.y = 0
         self.face = 0
         self.state = 0
@@ -23,8 +30,10 @@ class Player:
                           "Drachni":4,
                           "PLACEHOLDER BERRIES": 0,
                           }
-        self.tools = {"Free":0,"Hoe":0}
-        self.workStations = {"Blacksmith": 0}
+        self.tools = {"Free":0,"Hoe":1}
+        self.workStations = {
+            "Blacksmith": 0,
+                             }
         # 0 = U, 1 = D, 2 = L, 3 = R, 4 = UL, 5 = UR, 6 = DL, 7 = DR,
         # self.soul = py.Rect(self.x, self.y, var.GRID_SIZE, var.GRID_SIZE)
         # py.draw.rect(var.WIN, "red", self.soul)
@@ -48,18 +57,22 @@ class Player:
             self.y -= speed
             self.face = 3
             self.noMove = 0
+            randStep()
         elif symbol == py.window.key.W:
             self.y += speed
             self.face = 0
             self.noMove = 0
+            randStep()
         elif symbol == py.window.key.D:
             self.x += speed
             self.face = 7
             self.noMove = 0
+            randStep()
         elif symbol == py.window.key.A:
             self.x -= speed
             self.face = 6
             self.noMove = 0
+            randStep()
         # print(f"x: {self.x}, y: {self.y}")
         # ----------------------------------------------
         if symbol == py.window.key.Q:
@@ -99,6 +112,11 @@ class Player:
                 self.face = 5
             if self.targetX[i] < self.x and self.targetY[i] < self.y:
                 self.face = 4
+            if self.inter == 0:
+                randStep()
+            self.inter += 1
+            if self.inter == 1:
+                self.inter = 0
             lineWidth = 4
             lineColor = (100, 0, 0)
             for ii in range(len(self.targetX)):

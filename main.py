@@ -84,13 +84,28 @@ def GLO_clear():
 # --------------------------------------------------------
 # INVENTORY WINDOW HANDLERS
 # --------------------------------------------------------
-@INV.event()
+@INV.event
 def on_key_press(symbol, modifiers):
     GLO_key(symbol)
 
-
+INV_workToTool = 0
+INV_workToTool_max = 1
+@INV.event
+def on_mouse_press(x, y, button, modifiers):
+    global INV_workToTool
+    if INV_workToTool==0:
+        if var.INV_WIDTH/2+80<x<var.INV_WIDTH/2+105:
+            if 200>y>170:
+                sound.click.play()
+                INV_workToTool+=1
+    if INV_workToTool== 1:
+        if var.INV_WIDTH/2-80>x>var.INV_WIDTH/2-105:
+            if 200>y>170:
+                sound.click.play()
+                INV_workToTool-=1
 @INV.event
 def on_draw():
+    glEnable(GL_BLEND)
     GLO_clear()
     INV.clear()
     INV_sort = sorted(Player.materials.items(), key=lambda x: x[1], reverse=True)
@@ -107,17 +122,71 @@ def on_draw():
                                   anchor_x='left', anchor_y='top')
             label.draw()
             if i == "Krovavik Berries":
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 art.KrakovikBerryINV.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
             elif i == "Fertilizer":
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 art.FertilizerINV.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
             elif i == "Krovavik Berries (Corrupted)":
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 art.KrakovikBerryCOR.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
             elif i == "Drachni":
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
                 art.INV_Smiles.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
         if var.INV_HEIGHT - (25 * index) - 12 < 200:
             index = 0
             indexx = var.INV_WIDTH / 2
-
+    j = 1
+    yOffWork = -100
+    joff = 65
+    global INV_workToTool
+    if INV_workToTool == 0:
+        py.text.Label(f"Workstations",
+                      font_name='Times New Roman',
+                      font_size=20,
+                      x=var.INV_WIDTH/2, y=200,
+                      anchor_x='center', anchor_y='top').draw()
+        py.shapes.Triangle(var.INV_WIDTH/2+100,185,var.INV_WIDTH/2+85,195,var.INV_WIDTH/2+85,175,(250,250,250)).draw()
+        for i in Player.workStations:
+            if Player.workStations[i] > 0:
+                if i == "Blacksmith":
+                    art.SmithyLVL1.blit(j*joff-25,200+yOffWork)
+                else:
+                    art.TILE_PLACEHOLDER.blit(j*joff-25,200+yOffWork)
+                py.text.Label(f"{i} {Player.workStations[i]}",
+                                      font_name='Times New Roman',
+                                      font_size=10,
+                                      x=j*joff, y=200+yOffWork,
+                                      anchor_x='center', anchor_y='top').draw()
+                j += 1
+                if j * joff > var.INV_WIDTH:
+                    yOffWork -= 100
+    if INV_workToTool == 1:
+        py.text.Label(f"Tools",
+                              font_name='Times New Roman',
+                              font_size=20,
+                              x=var.INV_WIDTH / 2, y=200,
+                              anchor_x='center', anchor_y='top').draw()
+        py.shapes.Triangle(var.INV_WIDTH / 2 - 100, 185, var.INV_WIDTH / 2 - 85, 195, var.INV_WIDTH / 2 - 85,
+                                   175, (250, 250, 250)).draw()
+        for i in Player.tools:
+            if Player.tools[i] > 0:
+                if i == "Blacksmith":
+                    art.SmithyLVL1.blit(j * joff - 25, 200 + yOffWork)
+                else:
+                    art.TILE_PLACEHOLDER.blit(j * joff - 25, 200 + yOffWork)
+                py.text.Label(f"{i} {Player.tools[i]}",
+                                      font_name='Times New Roman',
+                                      font_size=10,
+                                      x=j * joff, y=200 + yOffWork,
+                                      anchor_x='center', anchor_y='top').draw()
+                j += 1
+                if j*joff > var.INV_WIDTH:
+                    yOffWork-=100
 
 # --------------------------------------------------------
 # BUILD WINDOW HANDLERS
@@ -162,6 +231,8 @@ class fert:
                                       font_size=10,
                                       x=self.x - 5, y=self.y - 15,
                                       anchor_x='center', anchor_y='bottom', color=self.SubCol)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         self.textArt.blit(self.x + 25, self.y - 13)
         fertlilizeMain.draw()
         fertlilizeSub.draw()
@@ -208,6 +279,7 @@ def on_mouse_press(x, y, button, modifiers):
 
 @CON.event
 def on_draw():
+    glEnable(GL_BLEND)
     GLO_clear()
     CON.clear()
     # con page 0
@@ -319,6 +391,7 @@ def on_draw():
                             Player.materials["Krovavik Berries (Corrupted)"] += 1
                         else:
                             Player.materials["Krovavik Berries"] += 1
+                        sound.harvest1.play()
     if HOLD != 0:
         if GRID[HOLD_i].x + var.P_RANGE >= Player.x >= GRID[HOLD_i].x - var.P_RANGE  and \
                             GRID[HOLD_i].y + var.P_RANGE  >= Player.y >= GRID[HOLD_i].y - var.P_RANGE :
