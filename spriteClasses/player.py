@@ -20,6 +20,7 @@ class Player:
         self.materials = {"Krovavik Berries": 0,
                           "Krovavik Berries (Corrupted)": 0,
                           "Fertilizer": 20,
+                          "Drachni":4,
                           "PLACEHOLDER BERRIES": 0,
                           }
         self.tools = {"Free":0,"Hoe":0}
