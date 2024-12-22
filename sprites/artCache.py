@@ -13,12 +13,22 @@ SmithyLVL1 = py.image.load("sprites/art/tiles/Smithy/SmithyLVL1.png")
 TILE_PLACEHOLDER = py.image.load("sprites/art/PLACEHOLDERS/50x50_PLACEHOLDER.png")
 GUI_PLACEHOLDER = py.image.load("sprites/art/PLACEHOLDERS/125x125_GUI_PLACEHOLDER.png")
 INV_Smiles = py.image.load("sprites/art/PLACEHOLDERS/INVsmiles.png")
+Village = py.image.load("sprites/art/PLACEHOLDERS/VillageBackround.png")
 # INV assests
 KrakovikBerryINV = py.image.load("sprites/art/inventoryIcons/KrovavikBerryINV.png")
 KrakovikBerryCOR = py.image.load("sprites/art/inventoryIcons/KrovavikCOR_INV.png")
 FertilizerINV = py.image.load("sprites/art/inventoryIcons/FertilizerIconINV.png")
+CoinINV = py.image.load("sprites/art/inventoryIcons/coin.png")
+DirtINV = py.image.load("sprites/art/inventoryIcons/dirtclump.png")
+
+def INV_sorter(text):
+    if text == "Krovavik Berries":
+        return KrakovikBerryINV
+    else:
+        return INV_Smiles
 #Krovavik Bush
 KrovavikTile = py.image.load("sprites/art/tiles/KrovavikBush/KrovavikBush.png")
+KrovavikTill = py.image.load("sprites/art/PLACEHOLDERS/50x50_PLACEHOLDER.png")
 # markers
 RipeMarker = py.image.load("sprites/art/markers/RipeMarker.png")
 FertileMarker = py.image.load("sprites/art/markers/FertileMarker.png")

@@ -90,18 +90,23 @@ def on_key_press(symbol, modifiers):
 
 INV_workToTool = 0
 INV_workToTool_max = 1
+INV_S = py.media.Player()
 @INV.event
 def on_mouse_press(x, y, button, modifiers):
     global INV_workToTool
     if INV_workToTool==0:
         if var.INV_WIDTH/2+80<x<var.INV_WIDTH/2+105:
             if 200>y>170:
-                sound.click.play()
+                INV_S.delete()
+                INV_S.queue(sound.click)
+                INV_S.play()
                 INV_workToTool+=1
     if INV_workToTool== 1:
         if var.INV_WIDTH/2-80>x>var.INV_WIDTH/2-105:
             if 200>y>170:
-                sound.click.play()
+                INV_S.delete()
+                INV_S.queue(sound.click)
+                INV_S.play()
                 INV_workToTool-=1
 @INV.event
 def on_draw():
@@ -136,7 +141,11 @@ def on_draw():
             elif i == "Drachni":
                 glEnable(GL_BLEND)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-                art.INV_Smiles.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
+                art.CoinINV.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
+            elif i == "Dirt":
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                art.DirtINV.blit(10 + indexx, var.INV_HEIGHT - (25 * index) - 12)
         if var.INV_HEIGHT - (25 * index) - 12 < 200:
             index = 0
             indexx = var.INV_WIDTH / 2
@@ -202,7 +211,7 @@ def on_key_press(symbol, modifiers):
 
 
 class fert:
-    def __init__(self, x, y, title, textArt, PlayerDict, DictType, LvlOrAmn, introTxt,visible):
+    def __init__(self, x, y, title, textArt, PlayerDict, DictType, LvlOrAmn_sub,LvlOrAmn_dom, introTxt,visible):
         self.x = x
         self.y = y
         self.Col = (255, 255, 255)
@@ -212,30 +221,34 @@ class fert:
         self.textArt = textArt
         self.PlayerDict = PlayerDict
         self.DictType = DictType
-        self.LvlOrAmn = LvlOrAmn
+        self.LvlOrAmn = LvlOrAmn_sub
         self.introTxt = introTxt
         self.visible = visible
+        self.cap = LvlOrAmn_dom
 
     def ConText(self):
         if self.PlayerDict[self.DictType] < self.LvlOrAmn:
             self.SubCol = (100, 0, 0)
         else:
             self.SubCol = (255, 255, 255)
-        fertlilizeMain = py.text.Label(f"{self.title}",
-                                       font_name='Times New Roman',
-                                       font_size=20,
-                                       x=self.x, y=self.y,
-                                       anchor_x='center', anchor_y='bottom', color=self.Col)
-        fertlilizeSub = py.text.Label(f"{self.introTxt} {self.LvlOrAmn}/{self.PlayerDict[self.DictType]}",
-                                      font_name='Times New Roman',
-                                      font_size=10,
-                                      x=self.x - 5, y=self.y - 15,
-                                      anchor_x='center', anchor_y='bottom', color=self.SubCol)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        self.textArt.blit(self.x + 25, self.y - 13)
-        fertlilizeMain.draw()
-        fertlilizeSub.draw()
+        #if not self.cap>lvl>self.LvlOrAmn:
+        #    self.visible = False
+        if self.visible is True:
+            fertlilizeMain = py.text.Label(f"{self.title}",
+                                           font_name='Times New Roman',
+                                           font_size=20,
+                                           x=self.x, y=self.y,
+                                           anchor_x='center', anchor_y='bottom', color=self.Col)
+            fertlilizeSub = py.text.Label(f"{self.introTxt} {self.LvlOrAmn}/{self.PlayerDict[self.DictType]}",
+                                          font_name='Times New Roman',
+                                          font_size=10,
+                                          x=self.x - 5, y=self.y - 15,
+                                          anchor_x='center', anchor_y='bottom', color=self.SubCol)
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            self.textArt.blit(self.x + fertlilizeSub.content_width/2, self.y - 13)
+            fertlilizeMain.draw()
+            fertlilizeSub.draw()
 
     def clicked(self, x, y):
         global CON_var
@@ -253,28 +266,79 @@ class fert:
                 self.build = False
                 print("aaa")
             print(self)
-            sound.click.play()
+            INV_S.delete()
+            INV_S.queue(sound.click)
+            INV_S.play()
 
 
+class PLbutton:
+    def __init__(self,x,y,material):
+        self.x = x
+        self.y = y
+        self.material = material
+        #self.text = text
+        self.active = False
+        self.Col = (255, 255, 255)
+    def clicked(self, x, y):
+        if x > self.x - 50 and x < self.x + 50 and y > self.y - 50 and y < self.y + 50:
+            for i in planting_sub.values():
+                if i.active is True and i != self:
+                    i.active = False
+                    i.Col = (255, 255, 255)
+            if not self.active:
+                self.Col = (100, 0, 0)
+                self.active = True
+                planting.introTxt = self.material
+                planting.DictType = self.material
+                planting.textArt = art.INV_sorter(self.material)
+                print("false")
+            else:
+                self.Col = (255, 255, 255)
+                self.active = False
+                print("aaa")
+            print(self)
+            INV_S.delete()
+            INV_S.queue(sound.click)
+            INV_S.play()
+    def draw(self):
+        if Player.materials[self.material] >= 1:
+            py.text.Label(f"{self.material}",
+                          font_name='Times New Roman',
+                          font_size=10,
+                          x=self.x, y=self.y,
+                          anchor_x='center', anchor_y='bottom', color=self.Col).draw()
 CON_var = {
-    "Fertil": fert(100, var.CON_HEIGHT - 40, "Fertilize", art.FertilizerINV, Player.materials, "Fertilizer", 1, "Uses",True),
-    "Smith": fert(100, var.CON_HEIGHT - 120, "Blacksmith", art.INV_Smiles, Player.tools, "Free", 0, "Free",True)}
-
-
+    "Fertil": fert(100, var.CON_HEIGHT - 40, "Fertilize", art.FertilizerINV, Player.materials, "Fertilizer", 1,100, "Uses",True),
+    "Smith": fert(100, var.CON_HEIGHT - 120, "Blacksmith", art.INV_Smiles, Player.tools, "Free", 0,2, "Free",True),
+    "Till": fert(200, var.CON_HEIGHT - 40,"Till",art.INV_Smiles,Player.tools,"Hoe",1,100,"Hoe",True)
+        }
+planting = fert(var.CON_WIDTH/2, var.CON_HEIGHT - 40,"Planting",art.INV_Smiles,Player.materials,"Dirt",1,100,"Seeds",True)
+planting_sub = {
+    "Krovavik Berry" : PLbutton(100,var.CON_HEIGHT - 100,"Krovavik Berries"),
+}
+CON_S = py.media.Player()
 @CON.event
 def on_mouse_press(x, y, button, modifiers):
     # menu Page 0
     if CON_CLASS.page == 0:
         if button == pyglet.window.mouse.LEFT:
             # fertilizer
-            CON_var["Fertil"].clicked(x, y)
-            CON_var["Smith"].clicked(x, y)
+            for i in CON_var.values():
+                i.clicked(x,y)
+    if CON_CLASS.page == 2:
+        planting.clicked(x,y)
+        for i in planting_sub.values():
+            i.clicked(x, y)
     if CON_CLASS.page < CON_CLASS.MaxPage - 1 and button == pyglet.window.mouse.LEFT and x < var.CON_WIDTH - 5 and x > var.CON_WIDTH - 25 and y < var.CON_HEIGHT / 2 + 15 and y > var.CON_HEIGHT / 2 - 15:
         CON_CLASS.page += 1
-        sound.click.play()
+        CON_S.delete()
+        CON_S.queue(sound.click)
+        CON_S.play()
     if CON_CLASS.page > 0 and button == pyglet.window.mouse.LEFT and x > 5 and x < 25 and y < var.CON_HEIGHT / 2 + 15 and y > var.CON_HEIGHT / 2 - 15:
         CON_CLASS.page -= 1
-        sound.click.play()
+        CON_S.delete()
+        CON_S.queue(sound.click)
+        CON_S.play()
 
 
 @CON.event
@@ -285,9 +349,13 @@ def on_draw():
     # con page 0
     if CON_CLASS.page == 0:
         CON_var["Fertil"].ConText()
+        CON_var["Till"].ConText()
         if Player.workStations["Blacksmith"] < 1 and CON_var["Smith"].visible is True:
             CON_var["Smith"].ConText()
-
+    elif CON_CLASS.page == 2:
+        planting.ConText()
+        for i in planting_sub.values():
+            i.draw()
     py.text.Label(f"Page: {CON_CLASS.page + 1}/{CON_CLASS.MaxPage}",
                   font_name='Times New Roman',
                   font_size=10,
@@ -300,7 +368,8 @@ def on_draw():
         pyglet.shapes.Triangle(5, var.CON_HEIGHT / 2, 20, var.CON_HEIGHT / 2 + 15, 20, var.CON_HEIGHT / 2 - 15,
                                color=(245, 245, 245)).draw()
     # print(CON.get_location())
-
+    if CON_CLASS.page == 2:
+        py.text.Label("")
 
 # --------------------------------------------------------
 # MAIN WINDOW HANDLERS
@@ -310,6 +379,7 @@ def M50(n):
 
 HOLD = 0
 HOLD_i = 0
+WIN_S = py.media.Player()
 @WIN.event
 def on_mouse_press(x, y, button, modifiers):
     global HOLD,HOLD_i
@@ -324,7 +394,9 @@ def on_mouse_press(x, y, button, modifiers):
                             print("fertile")
                             GRID[i].fertile = True
                             Player.materials["Fertilizer"] -= 1
-                            sound.CONSTRUCTION_SOUND.play()
+                            WIN_S.delete()
+                            WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                            WIN_S.play()
                         else:
                             Player.targetX.append(GRID[i].x)
                             Player.targetY.append(GRID[i].y)
@@ -340,13 +412,58 @@ def on_mouse_press(x, y, button, modifiers):
                         GRID[i].crop = False
                         GRID[i].state = 3
                         Player.workStations["Blacksmith"] = 1
-                        sound.CONSTRUCTION_SOUND.play()
+                        WIN_S.delete()
+                        WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                        WIN_S.play()
                         print(f"Smith {i}, {GRID[i].state}")
                     else:
                         Player.targetX.append(GRID[i].x)
                         Player.targetY.append(GRID[i].y)
                         Player.target = True
                         HOLD = 2
+                        HOLD_i = i
+        elif CON_var["Till"].build is True:
+            # CON_var["Smith"].visible = False
+            for i in range(len(GRID)):
+                if GRID[i].isTilled is False and M50(x) == GRID[i].x and M50(y) == GRID[i].y:
+                    if GRID[i].x + var.P_RANGE >= Player.x >= GRID[i].x - var.P_RANGE and \
+                            GRID[i].y + var.P_RANGE >= Player.y >= GRID[i].y - var.P_RANGE:
+                        GRID[i].crop = False
+                        GRID[i].state = 1
+                        GRID[i].isTilled = True
+                        if random.randint(1,6) == 6:
+                            Player.materials["Dirt"]+=1
+                        # Player.workStations["Blacksmith"] = 1
+                        WIN_S.delete()
+                        WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                        WIN_S.play()
+                        print(f"Till {i}, {GRID[i].state}")
+                    else:
+                        Player.targetX.append(GRID[i].x)
+                        Player.targetY.append(GRID[i].y)
+                        Player.target = True
+                        HOLD = 3
+                        HOLD_i = i
+        elif planting.build is True:
+            for i in range(len(GRID)):
+                if GRID[i].isTilled is True and M50(x) == GRID[i].x and M50(y) == GRID[i].y:
+                    if GRID[i].x + var.P_RANGE >= Player.x >= GRID[i].x - var.P_RANGE and \
+                            GRID[i].y + var.P_RANGE >= Player.y >= GRID[i].y - var.P_RANGE:
+                        GRID[i].crop = True
+                        GRID[i].state = 0
+                        GRID[i].isTilled = False
+                        GRID[i].cropType = 1
+                        Player.materials["Krovavik Berries"]-=1
+                        GRID[i].ripe = False
+                        WIN_S.delete()
+                        WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                        WIN_S.play()
+                        print(f"Plant {i}, {GRID[i].state}")
+                    else:
+                        Player.targetX.append(GRID[i].x)
+                        Player.targetY.append(GRID[i].y)
+                        Player.target = True
+                        HOLD = 3
                         HOLD_i = i
         else:
             Player.target = True
@@ -386,26 +503,64 @@ def on_draw():
             if GRID[i].crop is True:
                 if GRID[i].ripe is True and Player.x == GRID[i].x and Player.y == GRID[i].y:
                     GRID[i].ripe = False
+                    #berry pickup
                     if GRID[i].cropType == 0:
                         if random.randint(0, 4) == 1:
                             Player.materials["Krovavik Berries (Corrupted)"] += 1
                         else:
                             Player.materials["Krovavik Berries"] += 1
-                        sound.harvest1.play()
+                        WIN_S.delete()
+                        WIN_S.queue(sound.harvest1)
+                        WIN_S.play()
+                    #tilled berry Pickup
+                    elif GRID[i].cropType == 1:
+                        Player.materials["Krovavik Berries"] += 4
+                        WIN_S.delete()
+                        WIN_S.queue(sound.harvest1)
+                        WIN_S.play()
+    elif map_State == 1:
+        art.Village.blit(0,0)
     if HOLD != 0:
         if GRID[HOLD_i].x + var.P_RANGE >= Player.x >= GRID[HOLD_i].x - var.P_RANGE  and \
                             GRID[HOLD_i].y + var.P_RANGE  >= Player.y >= GRID[HOLD_i].y - var.P_RANGE :
+            #ferting
             if HOLD == 1:
                 GRID[HOLD_i].fertile = True
                 Player.materials["Fertilizer"] -= 1
-                sound.CONSTRUCTION_SOUND.play()
+                WIN_S.delete()
+                WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                WIN_S.play()
+            #smithing
             elif HOLD == 2:
                 GRID[HOLD_i].crop = False
                 GRID[HOLD_i].state = 3
                 Player.workStations["Blacksmith"] = 1
                 CON_var["Smith"].build = False
                 CON_var["Smith"].visible = False
-                sound.CONSTRUCTION_SOUND.play()
+                WIN_S.delete()
+                WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                WIN_S.play()
+            #tilling
+            elif HOLD == 3:
+                GRID[HOLD_i].crop = False
+                GRID[HOLD_i].state = 1
+                GRID[HOLD_i].isTilled = True
+                if random.randint(1, 6) == 6:
+                    Player.materials["Dirt"] += 1
+                WIN_S.delete()
+                WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                WIN_S.play()
+            #till berries
+            elif HOLD == 4:
+                GRID[HOLD_i].crop = True
+                GRID[HOLD_i].state = 0
+                GRID[HOLD_i].cropType = 1
+                GRID[HOLD_i].isTilled = False
+                Player.materials["Krovavik Berries"] -= 1
+                GRID[HOLD_i].ripe = False
+                WIN_S.delete()
+                WIN_S.queue(sound.CONSTRUCTION_SOUND)
+                WIN_S.play()
             HOLD = 0
             Player.target=False
             Player.targetX.clear()

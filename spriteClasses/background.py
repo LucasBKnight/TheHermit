@@ -14,7 +14,9 @@ class GridClass:
         self.color = "gray"
         self.crop = False
         self.isTilled = False
+        self.fertile = False
         self.state = 0
+        self.Cstate = False
         z = random.randint(0, 1010)
         if z < 995:
             self.state = 0
@@ -51,6 +53,9 @@ class GridClass:
             if self.cropType == 0:
                 # Krovavik
                 art.KrovavikTile.blit(self.x, self.y)
+            elif self.cropType == 1:
+                #krovavik tilled
+                art.KrovavikTill.blit(self.x, self.y)
             # ripe Checks
             if self.ripe == True:
                 art.RipeMarker.blit(self.x + var.GRID_SIZE - 10, self.y + var.GRID_SIZE - 10)

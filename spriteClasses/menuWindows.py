@@ -22,3 +22,4 @@ class conmenu:
 
     def is_shown(self):
         return self.shown
+

@@ -10,3 +10,23 @@ step2 = py.media.load("sprites/sound/step2.mp3")
 step2.volume = 1.0
 step3 = py.media.load("sprites/sound/step2.mp3")
 step3.volume = 1.0
+
+class MediaPlayer:
+    def __init__(self):
+        self.cycler = []
+    def addSound(self,sound):
+        check = True
+        for i in self.cycler:
+            if sound == i:
+                check = False
+                if i.playing:
+                    check = True
+                    i.pop()
+        if check is True:
+            self.cycler.append(sound)
+        else:
+            print("Sound Already Queued")
+    def play(self):
+        for i in self.cycler:
+            i.play()
+mediaPlayer = MediaPlayer()

@@ -3,15 +3,32 @@ from pyglet.gl import *
 from sprites import artCache as art,soundCache as sound
 import random
 speed = 50
-
+S1 = py.media.Player()
+S2 = py.media.Player()
+S = py.media.Player()
 def randStep():
     r = random.randint(1, 3)
-    if r==1:
-        sound.step1.play()
-    elif r==2:
-        sound.step2.play()
-    elif r==3:
-        sound.step3.play()
+    if r==1 and not S.playing:
+        S.delete()
+        S.queue(sound.step1)
+        S.play()
+        #sound.soundPlay.delete()
+        #sound.soundPlay.queue(sound.step1)
+        #sound.soundPlay.play()
+    elif r==2 and not S.playing:
+        S.delete()
+        S.queue(sound.step2)
+        S.play()
+        #sound.soundPlay.delete()
+        #sound.soundPlay.queue(sound.step2)
+        #sound.soundPlay.play()
+    elif r==3 and not S.playing:
+        S.delete()
+        S.queue(sound.step3)
+        S.play()
+        #sound.step3.play()
+        #sound.soundPlay.queue(sound.step3)
+        #sound.soundPlay.play()
 class Player:
     def __init__(self):
         self.x = 0
@@ -29,8 +46,13 @@ class Player:
                           "Fertilizer": 20,
                           "Drachni":4,
                           "PLACEHOLDER BERRIES": 0,
+                          "Dirt": 0,
                           }
-        self.tools = {"Free":0,"Hoe":1}
+        self.lastknownMat = self.materials.copy()
+        self.tools = {"Free":0,
+                      "Hoe":1,
+                      "Shovel":0
+                      }
         self.workStations = {
             "Blacksmith": 0,
                              }
@@ -85,6 +107,20 @@ class Player:
                 self.face = 7
 
     def draw(self):
+        if self.materials != self.lastknownMat:
+            for i in self.materials:
+                if self.materials[i] != self.lastknownMat[i]:
+                    mat = i
+                    matnum = self.materials[i] - self.lastknownMat[i]
+            py.text.Label(f"Gained {matnum} {mat}",
+                                  font_name='Times New Roman',
+                                  font_size=10,
+                                  x=self.x+25, y=self.y,
+                                  anchor_x='center', anchor_y='top').draw()
+            self.inter+=1
+            if self.inter ==5:
+                self.inter = 0
+                self.lastknownMat = self.materials.copy()
         line = []
         circle = []
         self.noMove += 1
@@ -112,11 +148,11 @@ class Player:
                 self.face = 5
             if self.targetX[i] < self.x and self.targetY[i] < self.y:
                 self.face = 4
-            if self.inter == 0:
-                randStep()
-            self.inter += 1
-            if self.inter == 1:
-                self.inter = 0
+            #if self.inter == 0:
+            randStep()
+            #self.inter += 1
+            #if self.inter == 1:
+            #    self.inter = 0
             lineWidth = 4
             lineColor = (100, 0, 0)
             for ii in range(len(self.targetX)):
@@ -150,3 +186,5 @@ class Player:
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         self.body = art.PlayerBaseA[self.face].blit(self.x, self.y)
+        #if self.target is False:
+            #sound.soundPlay.delete()
